@@ -1,0 +1,1 @@
+SELECT A.first_name, A.last_name from actor as A WHERE A.first_name= (SELECT A.first_name FROM actor as A WHERE A.actor_id =8 ) and A.actor_id <>8 ;
