@@ -66,7 +66,7 @@ $row = $result->fetch_assoc();
 					<span class="login100-form-title">
 						
                     <?php
-                      if ($row2["gender"]= "female"){
+                      if ($row2["gender"]== "female"){ //if female is Ms.
                               echo "Welcome Ms ".$row2["first_name"]; 
                          }
                      else{
