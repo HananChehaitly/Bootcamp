@@ -1,6 +1,8 @@
 
 <?php
  session_start(); 
+ $_session["count"]=0;
+
  include "connection.php";
 ?>
 
@@ -208,31 +210,16 @@ while($row1= $result1->fetch_assoc()){ ?>
 <!-- I will create a hidden inputs where I change the value on click of a category or product -->
 
 <form action= "clienthome.php" method= "POST" id="search">
-	<input type ="hidden" id="1" name= "category" value=""> <!-- This one is to know what category we clicked on-->
+	<input type ="hidden" id="100" name= "category" value=""> <!-- This one is to know what category we clicked on-->
 </form>
 
 <form action= "backend_clienthome.php" method= "POST" id ="purchase">
-	<input type ="hidden" id="2" name= "product" value=""> <!-- This one is to know what product we clicked on-->
+	<input type ="hidden" id="200" name= "product" value=""> <!-- This one is to know what product we clicked on-->
 </form>											<!-- value will be the actual table id of clicked product -->			
 
 
-<script>
 
-
-$(".dumb").on("click",function(){    // I am setting a click event on every category that changes the value of hidden input to the name of category.
-	
-$("#1").attr("value",$(this).text());
-    $('form#search').submit();
-});
-
-$($(".tf-ion-android-cart").on("click", function(){   // I am setting a click event on every purchase icon that changes the value of hidden input to the id of the item.
-$("#2").attr("value",$(this).attr("id"));
-	$('form#purchase').submit();
-});
-
-
-</script>
-
+<p id="gfg"></p>
 <?php
 if(!empty($_POST["category"])){ //this value serves as an indicator from JavaScript that the client clicked on a category to view.
 
@@ -246,8 +233,7 @@ $result = $stmt->get_result();
 
 while($row=$result->fetch_assoc()){
 	 ?>
-			<div class="col-md-9">
-				<div class="row">
+		
 					
 			<div class="col-md-4">
 				<div class="product-item">
@@ -256,33 +242,55 @@ while($row=$result->fetch_assoc()){
 						<img class="img-responsive" src="images/shop/products/product-1.jpg" alt="product-img" />
 						<div class="preview-meta">
 							
-<!-- Here I gave the purchase button an id equal to actual product's retrieved id-->
-								<a href="#!" id="dumby"><i class="tf-ion-android-cart" id="<?php echo $row["id"] ?>"></i></a>
-						
-							
+<!-- Here I gave the purchase button an id equal to actual product's retrieved id id=" echo $row["id"] "-->
+								
+								<div class="tf-ion-android-cart" id="<?php echo $row["id"] ?>">
+								</div>
+
+				</div>
                       	</div>
+					
+					<div class="product-content">
+
+		<!-- I echoed here-->	
+									<?php	 print($row["name"]);    
+									?>  
+				</div>
 					</div>
-					<div class="product-content" >					
- 					<h4><a href="product-single.html">
-										<?php
-										if (isset($_SESSION["product"]) && $_SESSION["product"]==$row["id"]){
-												echo 'You purchased '. $row["name"];
-										}
-										else{
-											echo $row["name"];
-										}
-									?>
-						</a></h4>
-						
-					</div>
-					</div>
+				
 									</div>
+		
 <?php 
 
 } 
 }
 ?>
 
+
+<script>
+$(".tf-ion-android-cart").click(function(){
+var id =$(this).attr("id");
+const x = new XMLHttpRequest();
+x.onload = function() {
+	document.getElementById(id).innerHTML= this.responseText;
+	};
+	x.open("Get","backend_clienthome.php?item="+id);
+	x.send();
+});
+
+$(".dumb").on("click",function(){    // I am setting a click event on every category that changes the value of hidden input to the name of category.
+
+$("#100").attr("value",$(this).text());
+    $('form#search').submit();
+});
+
+//$(".tf-ion-android-cart").on("click", function(){   // I am setting a click event on every purchase icon that changes the value of hidden input to the id of the item.
+
+//$("#200").attr("value",$(this).attr("id"));
+	//$('form#purchase').submit();
+//});
+
+</script>
 
     <!-- 
     Essential Scripts

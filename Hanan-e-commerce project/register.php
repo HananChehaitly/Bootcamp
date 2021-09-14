@@ -64,7 +64,7 @@ $stmt1->execute();
 $result = $stmt1->get_result();
 $row = $result->fetch_assoc();
 if(empty($row)){
-$sql2 = "INSERT INTO `clients` (`first_name`, `last_name`, `phone_number`, `email`, `password`) VALUES (?, ?, ?, ?, ?);"; #add the new user to the database
+$sql2 = "INSERT INTO `clients` (`first_name`, `last_name`, `phone_number`, `email`, `password`) VALUES (?, ?, ?, ?, ?)"; #add the new user to the database
 $hash = hash('sha256', $password);
 $stmt2 = $connection->prepare($sql2);
 $stmt2->bind_param("sssss",$first_name,$last_name,$phone,$email,$hash);
