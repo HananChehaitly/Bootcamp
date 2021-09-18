@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 17, 2021 at 07:21 AM
+-- Generation Time: Sep 18, 2021 at 06:08 AM
 -- Server version: 10.4.20-MariaDB
 -- PHP Version: 8.0.9
 
@@ -39,7 +39,10 @@ CREATE TABLE `categories` (
 
 INSERT INTO `categories` (`id`, `name`, `users_id`) VALUES
 (1, 'health', 2),
-(2, 'gas', 2);
+(2, 'gas', 2),
+(3, 'transport', 2),
+(4, 'food', 2),
+(5, 'outings', 2);
 
 -- --------------------------------------------------------
 
@@ -60,10 +63,12 @@ CREATE TABLE `expenses` (
 --
 
 INSERT INTO `expenses` (`id`, `users_id`, `date`, `amount`, `category_id`) VALUES
-(1, 2, '2021-09-16', 2000, 2),
-(2, 2, '2021-09-16', 700, 1),
-(34, 2, '0000-00-00', 2345, 1),
-(35, 2, '0000-00-00', 234, 2);
+(69, 2, '2013-05-03', 400, 2),
+(70, 2, '2020-02-06', 800, 1),
+(71, 2, '2020-02-09', 900, 3),
+(73, 2, '2021-02-06', 30, 2),
+(74, 2, '2021-02-06', 30, 4),
+(76, 2, '2021-02-11', 210, 5);
 
 -- --------------------------------------------------------
 
@@ -117,13 +122,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `expenses`
 --
 ALTER TABLE `expenses`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=79;
 
 --
 -- AUTO_INCREMENT for table `users`

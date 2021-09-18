@@ -2,20 +2,20 @@
 session_start();  //we need session for user id 
 include "connection.php";
 $user_id = $_SESSION["user_id"];
-$date = $_GET["date"];
+$date = $_POST["date"];
 $d = strtotime($date);
-$date = date('Y-m-d',$d);
-$amount = (int) $_GET["amount"];
-$categoryId = (int) $_GET["categoryId"];
+$newformat = date('Y-m-d',$d);
+$amount = (int) $_POST["amount"];
+$categoryId = (int) $_POST["categoryId"];
 
-$query ="Insert into expenses (users_id,date,amount,category_id) Values ($user_id,$date,$amount,$categoryId)";
+$query ="Insert into expenses (users_id,date,amount,category_id) Values (?,?,?,?)";
 $stmt = $connection->prepare($query);
-
-//must switch category to category_id
-//$stmt->bind_param("isii",$id,$date,$amount,$categoryId);
+$stmt->bind_param("isii",$user_id,$newformat,$amount,$categoryId);
 $stmt->execute();
 
-$query2 ="Select date,amount,category_id from expenses where users_id= $user_id and date= $date and amount = $amount and category_id = $categoryId";
+
+$newformat= "'".$newformat."'";
+$query2 ="Select date,amount,category_id from expenses where users_id= $user_id and date=$newformat and amount = $amount and category_id = $categoryId";
 $stmt2 = $connection->prepare($query2);
 $stmt2->execute();
 $result2 = $stmt2->get_result();

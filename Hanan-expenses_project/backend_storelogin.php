@@ -32,6 +32,6 @@ else{
 	session_start();
 	$_SESSION["user_id"] = $row["id"];
 	//$_SESSION["store_name"] = $row["name"];
-	header('location: storehome.php');
+	header('location: storehome.html');
 }
 ?>

@@ -1,9 +1,4 @@
 
-<?php
- session_start(); 
- include "connection.php";
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,7 +6,8 @@
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
 <script src="jquery-3.6.0.min.js"></script>
-
+<script src="https://cdn.anychart.com/releases/8.0.1/js/anychart-core.min.js"></script>
+      <script src="https://cdn.anychart.com/releases/8.0.1/js/anychart-pie.min.js"></script>
   <!-- Basic Page Needs
   ================================================== -->
   <meta charset="utf-8">
@@ -77,8 +73,9 @@ th {
 
 </head>
 
-<body onload="getData()">
+<body >
 
+<div id="container" style="width: 100%; height: 100%"></div>
 
 <section class="top-header">
 	<div class="container">
@@ -148,7 +145,7 @@ Add new expense
 									</td>
 						</tr>
 						<tr>
-  						 <td> <input type ="button"  placeholder="submit" class="form-control" id="submit"> 
+  						 <td> <input type ="button"  placeholder="submit" class="form-control" id="submit"  value="ADD"> 
 						
 						</td>
 						</tr>
@@ -194,8 +191,9 @@ Add new expense
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 	<script>
+			$(document).ready(getData);
 			async function Display(){
-				 const response = await fetch('http://localhost/await_project/backend_storehome.php');
+				 const response = await fetch('http://localhost/expenses_project/backend_storehome.php');
 				 if (!response.ok){
 					 const message = "An error occured";
 					 throw new Error(message);
@@ -203,46 +201,108 @@ Add new expense
 				 const results = await response.json();  
 				 return results;
 			}
+			
 
 		function getData(){
+			
 			Display().then(results => {
 			//should loop over result and create td elements	
 			for(var i=0; i<results.length; i++){
-				var row = $('<tr><td>'+ results[i].date + '</td><td>'+ results[i].amount +'</td><td>'+ results[i].category_id+ '</td></tr>');
+				//give row an id
+				var row = $('<tr id='+results[i].id+'><td>'+ results[i].date + '</td><td>'+ results[i].amount +'</td><td>'+ results[i].category_id+'</td><td><button type="button" class="btn btn-danger deleteBtn" id='+ ("deleted_"+results[i].id)+'>Delete</button></td></tr>');	
 				$('#expenses').append(row);
 			}
+			$('.deleteBtn').on("click", function(){
+				//we need to catch the id of the clicked delete button
+				var id = $(this).attr("id");
+				deleting(id).then(results => {
+					//just hide row of id of returned results.id
+					var rowId =""+results[0];
+					
+					$('#'+rowId).hide();
+				});
+			});  
+			/*$('.editBtn').on("click", function(){
+				//we need to catch the id of the clicked edit button
+				var id = $(this).attr("id");
+				editing(id).then(results => {
+					//show edits
+				}); 
+			});  */
 			}).catch(error => {
 				console.log(error.message);
 			})
 			$('#add').hide();
-		}
+     		} 
+			
+		/*async function editing(id){ 
+			const response  = await fetch("http://localhost/expenses_project/Edit.php?id="+id);
+			const results = await response.json();  
+			return results;
+		} */
+		
+
 		$("#overnight").click(unhide);
 		function unhide(){
 		$('#add').show();
 		}
+
+		async function deleting(id){ 
+			const response  = await fetch("http://localhost/expenses_project/delete.php?id="+id);
+			const results = await response.json();  
+			return results;
+		}
+
 		async function Send(){
-				 //var date = $("#date").val();
-				 //var amount = $("#amount").val(); 
-				 //var categoryId =  $("categoryId").val();
+				const response  = await fetch("http://localhost/expenses_project/Add.php",{
+					method: 'POST',
+					body: new URLSearchParams({
+						"date": $("#date").val(),
+						"amount": $("#amount").val() ,
+						"categoryId":$("#categoryId").val()
+					})
+				});
 
-				var url = new URL("http://localhost/await_project/Add.php");
-   				params = {date: $("#date").val(), amount:$("#amount").val(), categoryId :  $("#categoryId").val()};
-				console.log(params);
-				Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
-				const response1  = await fetch(url);
+				if (!response.ok){
+					 const message = "An error occured";
+					 throw new Error(message);
+				 }				
+				 const results = await response.json();  
+				 return results;
+		}
 
-				//const response = await fetch('http://localhost/await_project/Add.php?date='+date+'&amount='+amount+'&category_id='+categoryId);
-				
-				 const results1 = await response1.json();  
-				 return results1;
-			}
 		$("#submit").click(Add);
 		function Add(){
-			Send().then(results1 =>{
-				var row = $('<tr><td>'+ results1.date + '</td><td>'+results1.amount +'</td><td>'+ results1.category_id + '</td></tr>');
+			Send().then(results =>{
+				var row = $('<tr><td>'+ results.date + '</td><td>'+results.amount +'</td><td>'+ results.category_id + '</td><td><button type="button" class="btn btn-danger deleteBtn" >Delete</button></td></tr>');
 				$('#expenses').append(row);
+			}).catch(error => {
+				console.log(error.message);
 			})
 		}
+		
+		function getTable(){
+			$.ajax({
+				type:"GET",
+				url: "chartApi.php",
+				success: function (data){
+					// we convert the response to the needed data format 
+					var response = JSON.parse(data);
+					var data =[];
+					var index=0;
+					$.each(response, function(index,val){
+						data[index]={x: val['cat'] , value: val['sum']} ;
+					});
+					var chart = anychart.pie();	
+					chart.title("Expenses By Category");
+					chart.data(data);
+					chart.container('container');
+  					chart.draw();
+				}
+			});
+		}	
+		getTable();
+		
 
 		
 	</script>
